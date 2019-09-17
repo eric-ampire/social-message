@@ -98,8 +98,9 @@ public class NewSms extends AppCompatActivity implements
         recyclerView.setLayoutManager(linearLayoutManager);
         setRecyclerView(sms);
 
-        if (read!=null && read.equals("0"))
+        if (read!=null && read.equals("0")) {
             setReadSMS();
+        }
     }
     private void setRecyclerView(List<Smspp> sms) {
 
