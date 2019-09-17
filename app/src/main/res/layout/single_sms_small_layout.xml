@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/small_layout_main"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="1dp"
+    android:background="@color/dark"
+    android:clickable="true"
+    android:orientation="vertical"
+    android:focusable="true">
+
+    <FrameLayout
+        android:id="@+id/smsImageF"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/smsImage"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_margin="@dimen/margin_imageview"
+            android:src="@drawable/default_user" />
+
+        <ImageView
+            android:id="@+id/newsms"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_margin="5dp"
+            android:src="@android:drawable/presence_online" />
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/smsSender"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_sender"
+        android:layout_marginRight="@dimen/margin_imageview"
+        android:layout_toRightOf="@id/smsImageF"
+        android:text="@string/title"
+        android:textAllCaps="true"
+        android:textColor="@color/colorPrimaryText" />
+
+    <TextView
+        android:id="@+id/smsContent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/smsSender"
+        android:layout_marginRight="@dimen/margin_imageview"
+        android:layout_toRightOf="@id/smsImageF"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="@string/content_small"
+        android:textSize="@dimen/previewMessageSize" />
+
+    <TextView
+        android:id="@+id/time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/smsContent"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="10dp"
+        android:layout_toRightOf="@id/smsImageF"
+        android:textColor="@color/colorPrimaryThird"
+        android:visibility="visible" />
+
+</RelativeLayout>
