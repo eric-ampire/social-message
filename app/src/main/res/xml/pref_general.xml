@@ -1,15 +1,17 @@
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <Preference
-        android:key="backup"
-        android:summary="@string/backup_on_drive"
-        android:title="@string/google_drive_backup" />
+    <SwitchPreference
+        android:icon="@drawable/ic_sim_card_bleu"
+        android:defaultValue="false"
+        android:key="@string/key_sim1"
+        android:summary="Configurez la SIM 1 comme la sim par defaut"
+        android:title="SIM 1" />
 
-    <Preference
-        android:key="restore"
-        android:title="@string/restore_backup"
-        android:summary="@string/restore_backup_all"
-        />
-
+    <SwitchPreference
+        android:icon="@drawable/ic_sim_card_bleu"
+        android:summary="Configurez la SIM 2 comme la sim par defaut"
+        android:defaultValue="false"
+        android:key="@string/key_sim2"
+        android:title="SIM 2" />
 </PreferenceScreen>
