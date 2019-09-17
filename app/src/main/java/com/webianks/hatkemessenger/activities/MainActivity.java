@@ -83,12 +83,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if (Build.VERSION.SDK_INT >= 22) {
-            Log.e("dualsim", String.valueOf(
-                    SubscriptionManager.from(this).getActiveSubscriptionInfoForSimSlotIndex(0).getDisplayName()));
-        }else{
-            Log.e("dualsim","faild");
-        }
         init();
     }
 
@@ -119,18 +113,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             .withPermissions(permission)
             .withListener(this)
             .check();
-
-//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED) {
-//            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_SMS)) {
-//
-//            } else {
-//                ActivityCompat.requestPermissions(this,
-//                        new String[]{Manifest.permission.READ_SMS},
-//                        Constants.MY_PERMISSIONS_REQUEST_READ_SMS);
-//            }
-//        } else{
-//            getSupportLoaderManager().initLoader(Constants.ALL_SMS_LOADER, null, this);
-//        }
     }
 
     private boolean checkDefaultSettings() {
