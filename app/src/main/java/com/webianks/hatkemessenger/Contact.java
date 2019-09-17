@@ -3,8 +3,10 @@ package com.webianks.hatkemessenger;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.util.Comparator;
+
 @DatabaseTable
-public class Contact {
+public class Contact implements Comparable<Contact> {
   @DatabaseField(generatedId = true)
   private int id;
   @DatabaseField
@@ -63,5 +65,10 @@ public class Contact {
 
   public void setIdGroupe(int idGroupe) {
     this.idGroupe = idGroupe;
+  }
+
+  @Override
+  public int compareTo(Contact o) {
+    return this.getNom().compareTo(o.getNom());
   }
 }

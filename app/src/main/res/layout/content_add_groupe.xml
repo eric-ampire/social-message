@@ -7,25 +7,41 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".activities.AddGroupe"
     tools:showIn="@layout/activity_add_groupe">
+
+    <ProgressBar
+        android:id="@+id/progressBar2"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:indeterminate="true"
+        app:layout_anchorGravity="center"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/progressBar2">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:orientation="horizontal"
             android:background="@color/white"
+            android:orientation="horizontal"
             android:weightSum="2">
 
             <EditText
                 android:id="@+id/titregroupe"
+                style="@style/App_EditTextStyle"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1.6"
                 android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                android:hint="Le titre du groupe de diffusion"
-                style="@style/App_EditTextStyle" />
+                android:layout_weight="1.6"
+                android:hint="Le titre du groupe de diffusion" />
 
             <ImageView
                 android:id="@+id/imbtngroupe"
@@ -40,27 +56,29 @@
                 app:srcCompat="@drawable/ic_arrow_drop_down" />
 
         </LinearLayout>
+
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/contactsrcv"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginBottom="50dp"
-                android:id="@+id/contactsrcv">
+                android:layout_marginBottom="50dp">
 
             </androidx.recyclerview.widget.RecyclerView>
+
             <Button
                 android:id="@+id/terminer"
-                android:layout_gravity="bottom"
-                android:text="TERMINER"
-                android:textSize="20sp"
-                android:textColor="@color/white"
-                android:background="@color/colorPrimary"
-                android:layout_margin="10dp"
                 android:layout_width="match_parent"
-                android:layout_height="30dp" />
+                android:layout_height="30dp"
+                android:layout_gravity="bottom"
+                android:layout_margin="10dp"
+                android:background="@color/colorPrimary"
+                android:text="TERMINER"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
         </FrameLayout>
     </LinearLayout>
 

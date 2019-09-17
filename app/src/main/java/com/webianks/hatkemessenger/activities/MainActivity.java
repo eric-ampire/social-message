@@ -59,6 +59,7 @@ import com.webianks.hatkemessenger.constants.SmsContract;
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -76,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private LinearLayoutManager linearLayoutManager;
     private BroadcastReceiver mReceiver;
     private ProgressBar progressBar;
-    private List<Contact> contacts;
+    private List<Contact> contacts = new ArrayList<>();
 
     @SuppressLint("MissingPermission")
     @Override
@@ -279,26 +280,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public List<Contact> allContact() {
-        Cursor phones = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
-        List<Contact> contacts = new ArrayList<Contact>();
-        while (phones.moveToNext()) {
-            for (int i = 0; i < phones.getColumnCount(); i++) {
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                Cursor phones = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
+                while (phones.moveToNext()) {
+                    for (int i = 0; i < phones.getColumnCount(); i++) {
 
-                try {
-                    Log.i(phones.getColumnName(i) + "", phones.getString(i));
-                } catch (Exception e) {
-                    Log.i("ereur", i + "");
+                        try {
+                            Log.i(phones.getColumnName(i) + "", phones.getString(i));
+                        } catch (Exception e) {
+                            Log.i("ereur", i + "");
+                        }
+
+                    }
+
+                    String name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+                    String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                    Log.i("num ", name);
+                    Log.i("nom ", phoneNumber);
+                    contacts.add(new Contact(name, phoneNumber, 0));
                 }
-
+                phones.close();
             }
+        });
 
-            String name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-            String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-            Log.i("num ", name);
-            Log.i("nom ", phoneNumber);
-            contacts.add(new Contact(name, phoneNumber, 0));
-        }
-        phones.close();
         return contacts;
     }
 
@@ -307,8 +313,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if (cursor != null && cursor.getCount() > 0) {
             getAllSmsToFile(cursor);
-            progressBar.setVisibility(View.GONE);
-
 
         } else {
             //no sms
@@ -345,44 +349,53 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    public void getAllSmsToFile(Cursor c) {
+    public void getAllSmsToFile(final Cursor c) {
 
-        List<SMS> lstSms = new ArrayList<SMS>();
-        SMS objSMS = null;
-        int totalSMS = c.getCount();
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                final List<SMS> lstSms = new ArrayList<SMS>();
+                SMS objSMS = null;
+                int totalSMS = c.getCount();
 
-        if (c.moveToFirst()) {
-            for (int i = 0; i < totalSMS; i++) {
+                if (c.moveToFirst()) {
+                    for (int i = 0; i < totalSMS; i++) {
 
-                try {
-                    objSMS = new SMS();
-                    objSMS.setId(c.getLong(c.getColumnIndexOrThrow("_id")));
-                    objSMS.setAddress(c.getString(c.getColumnIndexOrThrow("address")));
-                    objSMS.setMsg(c.getString(c.getColumnIndexOrThrow("body")));
-                    objSMS.setReadState(c.getString(c.getColumnIndex("read")));
-                    objSMS.setTime(c.getLong(c.getColumnIndexOrThrow("date")));
-                    if (c.getString(c.getColumnIndexOrThrow("type")).contains("1")) {
-                        objSMS.setFolderName("inbox");
-                    } else {
-                        objSMS.setFolderName("sent");
+                        try {
+                            objSMS = new SMS();
+                            objSMS.setId(c.getLong(c.getColumnIndexOrThrow("_id")));
+                            objSMS.setAddress(c.getString(c.getColumnIndexOrThrow("address")));
+                            objSMS.setMsg(c.getString(c.getColumnIndexOrThrow("body")));
+                            objSMS.setReadState(c.getString(c.getColumnIndex("read")));
+                            objSMS.setTime(c.getLong(c.getColumnIndexOrThrow("date")));
+                            if (c.getString(c.getColumnIndexOrThrow("type")).contains("1")) {
+                                objSMS.setFolderName("inbox");
+                            } else {
+                                objSMS.setFolderName("sent");
+                            }
+
+                        } catch (Exception e) {
+
+                        } finally {
+
+                            lstSms.add(objSMS);
+                            c.moveToNext();
+                        }
                     }
-
-                } catch (Exception e) {
-
-                } finally {
-
-                    lstSms.add(objSMS);
-                    c.moveToNext();
                 }
+                c.close();
+
+                data = lstSms;
+
+                //Log.d(TAG,"Size before "+data.size());
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        sortAndSetToRecycler(lstSms);
+                    }
+                });
             }
-        }
-        c.close();
-
-        data = lstSms;
-
-        //Log.d(TAG,"Size before "+data.size());
-        sortAndSetToRecycler(lstSms);
-
+        });
     }
 
     private void sortAndSetToRecycler(List<SMS> lstSms) {
@@ -408,10 +421,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //List<String> target2 = gson.fromJson(json, listType);
         //Log.d(TAG, json);
 
+        progressBar.setVisibility(View.GONE);
     }
 
     @Override
     public void onPermissionsChecked(MultiplePermissionsReport report) {
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+
+            }
+        });
+
         getSupportLoaderManager().initLoader(Constants.ALL_SMS_LOADER, null, this);
     }
 

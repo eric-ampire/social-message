@@ -11,6 +11,12 @@
         android:background="@color/white"
         tools:ignore="MissingConstraints">
 
+        <ImageView
+            android:id="@+id/covercontactgroupe"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_account_circle_black_36dp" />
+
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="40dp"
@@ -18,11 +24,14 @@
             android:background="#991976D2">
 
             <LinearLayout
+                android:padding="4dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
                 <TextView
+                    android:maxLines="1"
+                    android:ellipsize="end"
                     android:id="@+id/namecontact"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -41,11 +50,5 @@
 
         </FrameLayout>
 
-        <ImageView
-
-            android:id="@+id/covercontactgroupe"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@drawable/ic_account_circle_black_36dp" />
     </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

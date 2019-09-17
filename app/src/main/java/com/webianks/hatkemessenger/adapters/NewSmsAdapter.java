@@ -29,8 +29,9 @@ public class NewSmsAdapter extends RecyclerView.Adapter<com.webianks.hatkemessen
         this.sms = sms;
         this.color = color;
 
-        if (color == 0)
+        if (color == 0) {
             generator = ColorGeneratorModified.MATERIAL;
+        }
     }
 
     @Override

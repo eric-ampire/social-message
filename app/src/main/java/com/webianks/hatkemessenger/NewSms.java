@@ -98,8 +98,9 @@ public class NewSms extends AppCompatActivity implements
         recyclerView.setLayoutManager(linearLayoutManager);
         setRecyclerView(sms);
 
-        if (read!=null && read.equals("0"))
+        if (read!=null && read.equals("0")) {
             setReadSMS();
+        }
     }
     private void setRecyclerView(List<Smspp> sms) {
 
@@ -114,6 +115,7 @@ public class NewSms extends AppCompatActivity implements
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case RESULT_PICK_CONTACT:
@@ -125,15 +127,15 @@ public class NewSms extends AppCompatActivity implements
                         Uri uri = data.getData();
                         cursor = getContentResolver().query(uri, null, null, null, null);
                         cursor.moveToFirst();
-                        int  phoneIndex =cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
-                        int  nameIndex =cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
+                        int phoneIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
+                        int nameIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
                         phoneNo = cursor.getString(phoneIndex);
                         name = cursor.getString(nameIndex);
-                        Log.e("Contact number is",name+","+phoneNo);
+                        Log.e("Contact number is", name + "," + phoneNo);
                         contact.setText(phoneNo);
                         Ormlite ormlite = new Ormlite(getApplicationContext());
                         initRcv(ormlite.getSmsppByReceiverNumber(phoneNo));
-                        Log.e("smsDB",ormlite.getSmsppByReceiverNumber(phoneNo).toString());
+                        Log.e("smsDB", ormlite.getSmsppByReceiverNumber(phoneNo).toString());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
