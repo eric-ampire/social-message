@@ -25,5 +25,7 @@
     <string name="title_activity_add_groupe">AddGroupe</string>
     <string name="title_activity_groupe_detail">GroupeDetail</string>
     <string name="title_activity_preference">Preference</string>
+    <string name="key_sim1">switch_preference_sim_1</string>
+    <string name="key_sim2">switch_preference_sim_2</string>
 
 </resources>
