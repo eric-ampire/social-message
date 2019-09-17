@@ -2,14 +2,14 @@ package com.webianks.hatkemessenger.setting;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.telephony.SubscriptionManager;
 import android.widget.Toast;
-
 import androidx.annotation.RequiresApi;
 import androidx.preference.PreferenceFragmentCompat;
-
+import androidx.preference.PreferenceManager;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionDeniedResponse;
@@ -20,7 +20,10 @@ import com.webianks.hatkemessenger.R;
 
 import java.util.Objects;
 
-public class SettingFragment extends PreferenceFragmentCompat implements PermissionListener {
+public class SettingFragment extends PreferenceFragmentCompat implements PermissionListener, SharedPreferences.OnSharedPreferenceChangeListener {
+
+    private SharedPreferences pref;
+
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         setPreferencesFromResource(R.xml.pref_general, rootKey);
@@ -30,6 +33,8 @@ public class SettingFragment extends PreferenceFragmentCompat implements Permiss
             .withListener(this)
             .check();
 
+        pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        pref.registerOnSharedPreferenceChangeListener(this);
     }
 
     @SuppressLint("MissingPermission")
@@ -59,6 +64,12 @@ public class SettingFragment extends PreferenceFragmentCompat implements Permiss
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        pref.unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
     public void onPermissionDenied(PermissionDeniedResponse response) {
 
     }
@@ -66,5 +77,10 @@ public class SettingFragment extends PreferenceFragmentCompat implements Permiss
     @Override
     public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
 
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        // Todo: Disable or Enable
     }
 }
