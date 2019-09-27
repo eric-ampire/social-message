@@ -77,8 +77,9 @@ public class AddGroupe extends AppCompatActivity {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setReverseLayout(false);
         recyclerView.setLayoutManager(linearLayoutManager);
-        contactAdapter = new ContactAdapter(this, allContact(), titreGroupe.getText().toString());
+        contactAdapter = new ContactAdapter(this, titreGroupe.getText().toString());
         recyclerView.setAdapter(contactAdapter);
+        contactAdapter.submitList(allContact());
     }
 
     public List<Contact> allContact() {
