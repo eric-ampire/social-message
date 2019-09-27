@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:id="@+id/rootView"
     android:layout_marginLeft="8dp"
     android:layout_marginTop="8dp"
-    android:layout_marginRight="8dp"
-    android:background="@color/white">
+    android:layout_marginRight="8dp">
 
     <LinearLayout
         android:padding="8dp"
@@ -16,7 +16,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="7dp"
-        android:background="@color/dark"
         android:clickable="true"
         android:orientation="horizontal"
         tools:ignore="MissingConstraints">
@@ -26,7 +25,6 @@
             android:id="@+id/checked"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/dark"
             tools:ignore="MissingConstraints">
 
             <LinearLayout
@@ -103,5 +101,13 @@
 
 
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#aaa"
+        app:layout_constraintBottom_toBottomOf="@+id/cardcontact"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
