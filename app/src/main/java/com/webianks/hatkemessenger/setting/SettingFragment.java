@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.telephony.SubscriptionManager;
+import android.util.Log;
 import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 import androidx.preference.PreferenceFragmentCompat;
@@ -82,5 +83,8 @@ public class SettingFragment extends PreferenceFragmentCompat implements Permiss
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         // Todo: Disable or Enable
+        int sim = key.contains("switch_preference_sim_1") ? 0 : 1;
+        sharedPreferences.edit().putInt("InterconnectionSim", sim);
+        Log.e("key", key);
     }
 }

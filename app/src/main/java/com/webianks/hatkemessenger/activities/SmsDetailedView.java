@@ -33,6 +33,7 @@ public class SmsDetailedView extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
 
     private String contact;
+    private String nomContact;
     private SingleGroupAdapter singleGroupAdapter;
     private RecyclerView recyclerView;
     private EditText etMessage;
@@ -59,7 +60,9 @@ public class SmsDetailedView extends AppCompatActivity implements
         Intent intent = getIntent();
 
 
-        contact = intent.getStringExtra(Constants.CONTACT_NAME);
+        contact = intent.getStringExtra(Constants.CONTACT_NUM);
+        nomContact = intent.getStringExtra(Constants.CONTACT_NAME);
+
         _Id = intent.getLongExtra(Constants.SMS_ID, -123);
         color = intent.getIntExtra(Constants.COLOR, 0);
         read = intent.getStringExtra(Constants.READ);
@@ -67,7 +70,7 @@ public class SmsDetailedView extends AppCompatActivity implements
         from_reciever = intent.getBooleanExtra(Constants.FROM_SMS_RECIEVER, false);
 
         if (getSupportActionBar() != null)
-            getSupportActionBar().setTitle(contact);
+            getSupportActionBar().setTitle(nomContact);
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);

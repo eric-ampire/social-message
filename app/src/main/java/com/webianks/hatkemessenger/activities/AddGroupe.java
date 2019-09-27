@@ -1,6 +1,7 @@
 package com.webianks.hatkemessenger.activities;
 
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
@@ -88,7 +89,7 @@ public class AddGroupe extends AppCompatActivity {
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
-                Cursor phones = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
+                /*Cursor phones = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
                 while (phones.moveToNext()) {
                     for (int i = 0; i < phones.getColumnCount(); i++) {
 
@@ -102,12 +103,49 @@ public class AddGroupe extends AppCompatActivity {
 
                     String name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
                     String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                    Log.i("num ", name);
-                    Log.i("nom ", phoneNumber);
-                    contacts.add(new Contact(name, phoneNumber, 0));
+                    String email = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Email.ADDRESS));
+                    Log.i("AddGroup - nom ", name);
+                    Log.i("AddGroup - num ", phoneNumber);
+                    Log.i("AddGroup - email ", email);
+                    contacts.add(new Contact(name, phoneNumber, email, 0));
                 }
                 phones.close();
-                Collections.sort(contacts);
+                Collections.sort(contacts);*/
+
+                Cursor crContacts;
+                String id, name, phone = "No phone number", email = "No email";
+                String order = ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC";
+                ContentResolver cr = getContentResolver();
+                crContacts = cr.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, order);
+
+                while(crContacts.moveToNext()) {
+                    id = crContacts.getString(crContacts.getColumnIndex(ContactsContract.Contacts._ID));
+                    name = crContacts.getString(crContacts.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+
+                    // get just the first phone number if there is
+                    Cursor crPhones = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
+                                ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ? ", new String[]{id}, null);
+                    if(crPhones.moveToFirst()) {
+                        phone = crPhones.getString(crPhones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                    }
+                    crPhones.close();
+
+                    // get just the first email adress if there is
+                    Cursor crEmails = cr.query(ContactsContract.CommonDataKinds.Email.CONTENT_URI, null,
+                            ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?", new String[]{id}, null);
+                    if(crEmails.moveToFirst()) {
+                        email = crEmails.getString(crEmails.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
+                    }
+                    crEmails.close();
+
+                    Log.i("AddGroup - ID ", id);
+                    Log.i("AddGroup - num ", phone);
+                    Log.i("AddGroup - nom ", name);
+                    Log.i("AddGroup - email ", email);
+                    contacts.add(new Contact(name, phone, email, 0));
+                    email = "No email";
+                }
+                crContacts.close();
 
                 runOnUiThread(new Runnable() {
                     @Override

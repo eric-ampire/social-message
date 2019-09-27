@@ -13,9 +13,6 @@ import com.webianks.hatkemessenger.R;
 import com.webianks.hatkemessenger.utils.ColorGeneratorModified;
 import com.webianks.hatkemessenger.utils.Helpers;
 
-/**
- * Created by R Ankit on 25-12-2016.
- */
 
 public class SingleGroupAdapter extends RecyclerView.Adapter<SingleGroupAdapter.MyViewHolder> {
 
@@ -80,6 +77,7 @@ public class SingleGroupAdapter extends RecyclerView.Adapter<SingleGroupAdapter.
 
     @Override
     public int getItemCount() {
+
         return (dataCursor == null) ? 0 : dataCursor.getCount();
     }
 

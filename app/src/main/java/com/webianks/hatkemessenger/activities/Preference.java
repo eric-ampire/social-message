@@ -1,6 +1,8 @@
 package com.webianks.hatkemessenger.activities;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -17,5 +19,6 @@ public class Preference extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Log.e("pref","got it");
     }
 }
