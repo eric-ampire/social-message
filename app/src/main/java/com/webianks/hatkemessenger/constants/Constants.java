@@ -9,6 +9,7 @@ package com.webianks.hatkemessenger.constants;
 public class Constants {
 
     public static final String CONTACT_NAME = "contact_name";
+    public static final String CONTACT_NUM = "contact_num";
     public static final int CONVERSATION_LOADER = 321;
     public static final int ALL_SMS_LOADER = 123;
     public static final int MY_PERMISSIONS_REQUEST_SEND_SMS = 0;

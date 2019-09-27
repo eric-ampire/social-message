@@ -87,13 +87,14 @@ public class AllConversationAdapter extends RecyclerView.Adapter<AllConversation
     }
 
     @Override
-    public void onBindViewHolder(AllConversationAdapter.MyHolder holder, int position) {
+    public void onBindViewHolder(MyHolder holder, int position) {
 
         SMS sms = data.get(position);
 
         String name = getNameByNumber(sms.getAddress());
+        String num = sms.getAddress();
 
-
+        holder.setNumSender(num);
         holder.senderContact.setText(name);
         holder.message.setText(sms.getMsg());
 
@@ -149,6 +150,8 @@ public class AllConversationAdapter extends RecyclerView.Adapter<AllConversation
         private RelativeLayout mainLayout;
         private ImageView newSmsIncator;
 
+        private String numSender;
+
         public MyHolder(View itemView) {
             super(itemView);
             senderImage = (ImageView) itemView.findViewById(R.id.smsImage);
@@ -160,6 +163,11 @@ public class AllConversationAdapter extends RecyclerView.Adapter<AllConversation
             mainLayout.setOnClickListener(this);
             mainLayout.setOnLongClickListener(this);
         }
+        public void setNumSender(String numSender) {
+            this.numSender = numSender;
+        }
+
+
 
         @Override
         public void onClick(View view) {
@@ -168,8 +176,12 @@ public class AllConversationAdapter extends RecyclerView.Adapter<AllConversation
                 data.get(getAdapterPosition()).setReadState("1");
                 notifyItemChanged(getAdapterPosition());
 
-                itemClickListener.itemClicked(data.get(getAdapterPosition()).getColor(),
+               /* itemClickListener.itemClicked(data.get(getAdapterPosition()).getColor(),
                         senderContact.getText().toString(),
+                        data.get(getAdapterPosition()).getId(),
+                        data.get(getAdapterPosition()).getReadState());*/
+                itemClickListener.itemClicked(data.get(getAdapterPosition()).getColor(),
+                        this.numSender + ":" + senderContact.getText().toString(), // add
                         data.get(getAdapterPosition()).getId(),
                         data.get(getAdapterPosition()).getReadState());
             }

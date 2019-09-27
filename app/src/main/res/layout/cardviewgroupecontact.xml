@@ -6,8 +6,8 @@
     android:layout_marginRight="7dp">
 
     <FrameLayout
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
         android:background="@color/white"
         tools:ignore="MissingConstraints">
 
@@ -19,7 +19,7 @@
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="80dp"
             android:layout_gravity="bottom"
             android:background="#991976D2">
 
@@ -44,6 +44,22 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="+243 85 20 93 279"
+                    android:textColor="@color/white"
+                    android:textSize="10dp" />
+
+                <TextView
+                    android:id="@+id/contactemail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="No email"
+                    android:textColor="@color/white"
+                    android:textSize="10dp" />
+
+                <TextView
+                    android:id="@+id/pref"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Pref: par SMS"
                     android:textColor="@color/white"
                     android:textSize="10dp" />
             </LinearLayout>

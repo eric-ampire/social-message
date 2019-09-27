@@ -17,9 +17,7 @@ import com.webianks.hatkemessenger.R;
 import com.webianks.hatkemessenger.receivers.DeliverReceiver;
 import com.webianks.hatkemessenger.receivers.SentReceiver;
 
-/**
- * Created by R Ankit on 24-12-2016.
- */
+
 
 public class NewSMSActivity extends AppCompatActivity implements View.OnClickListener {
 

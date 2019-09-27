@@ -2,14 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.webianks.hatkemessenger">
 
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.RECEIVE_SMS" />
-    <uses-permission android:name="android.permission.READ_SMS" />
-    <uses-permission android:name="android.permission.WRITE_SMS" />
-    <uses-permission android:name="android.permission.SEND_SMS" />
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -53,15 +45,16 @@
                 android:value="com.webianks.hatkemessenger.activities.MainActivity" />
         </activity>
         <activity
-            android:label="New Message"
-            android:parentActivityName=".activities.MainActivity"
-            android:name=".NewSms" />
+            android:name=".NewSms"
+            android:label="Nouveau message"
+            android:parentActivityName=".activities.MainActivity" />
         <activity
-            android:launchMode="singleTop"
-            android:name=".activities.MainActivity">
+            android:name=".activities.MainActivity"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
@@ -84,6 +77,13 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".activities.SmsDetailedView"
+            android:parentActivityName=".activities.MainActivity" /> <!-- BroadcastReceiver that listens for incoming MMS messages -->
+        <activity
+            android:name=".activities.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".activities.MainActivity" /> <!-- Service that delivers messages from the phone "quick response" -->
         <receiver
             android:name=".receivers.SmsReceiver"
             android:enabled="true"
@@ -93,7 +93,7 @@
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
                 <action android:name="android.provider.Telephony.SMS_DELIVER" />
             </intent-filter>
-        </receiver> <!-- BroadcastReceiver that listens for incoming MMS messages -->
+        </receiver>
         <receiver
             android:name=".receivers.MmsReceiver"
             android:permission="android.permission.BROADCAST_WAP_PUSH">
@@ -102,7 +102,8 @@
 
                 <data android:mimeType="application/vnd.wap.mms-message" />
             </intent-filter>
-        </receiver> <!-- Service that delivers messages from the phone "quick response" -->
+        </receiver>
+
         <service
             android:name=".services.HeadlessSmsSendService"
             android:exported="true"
@@ -122,15 +123,15 @@
             android:name=".services.SaveSmsService"
             android:exported="false" />
 
-        <activity
-            android:parentActivityName=".activities.MainActivity"
-            android:name=".activities.SmsDetailedView" />
-        <activity
-            android:parentActivityName=".activities.MainActivity"
-            android:name=".activities.SettingsActivity"
-            android:label="@string/title_activity_settings" />
-
         <service android:name=".services.UpdateSMSService" />
     </application>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.WRITE_SMS" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
 </manifest>

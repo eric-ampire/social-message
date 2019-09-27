@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.webianks.hatkemessenger.Contact;
@@ -54,11 +56,14 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.MyViewHo
         final Contact contactActuel = contacts.get(position);
         holder.nom.setText(contacts.get(position).getNom());
         holder.numero.setText(contacts.get(position).getNumber());
+        holder.email.setText(contacts.get(position).getEmail());
         holder.card.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
                 holder.cover.setColorFilter(generator.getColor(contacts.get(position).getNom()));
                 holder.ischeck.setBackgroundColor(generator.getColor(contacts.get(position + 1).getNom()));
+                contactActuel.setPar_sms(holder.par_sms.isChecked());
+                contactActuel.setPar_mail(holder.par_mail.isChecked());
                 Ormlite ormlite = new Ormlite(context);
                 if (!ormlite.isContactExist(contactActuel)) {
                     if (ormlite.insertContact(contactActuel)) {
@@ -103,19 +108,25 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.MyViewHo
 
         private TextView nom;
         private TextView numero;
+        private TextView email;
         private LinearLayout card;
         private FrameLayout ischeck;
         private ImageView cover;
+        private RadioButton par_sms;
+        private RadioButton par_mail;
 
         public MyViewHolder(View itemView) {
             super(itemView);
 
             nom = (TextView) itemView.findViewById(R.id.nomcontact);
             numero = (TextView) itemView.findViewById(R.id.numcontact);
+            email = (TextView) itemView.findViewById(R.id.emailContact);
             card = (LinearLayout) itemView.findViewById(R.id.cardcontact);
             cover = (ImageView) itemView.findViewById(R.id.covercontact);
             ischeck = (FrameLayout) itemView.findViewById(R.id.ischeck);
 
+            par_sms = (RadioButton) itemView.findViewById(R.id.parSms);
+            par_mail = (RadioButton) itemView.findViewById(R.id.parMail);
         }
 
     }

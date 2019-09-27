@@ -30,9 +30,7 @@ public class SimUtils {
                 @Override
                 public void run() {
                     if (sendSMS(ctx, contacts.get(i).getNumber(), centerNum, smsText, sentIntent, deliveryIntent)) {
-
                         Log.e("diffusion", contacts.get(i).toString());
-
                     }
                     i++;
                 }
@@ -73,8 +71,10 @@ public class SimUtils {
             } else {
                 if (isDualSim(ctx)) {
                     SmsManager.getSmsManagerForSubscriptionId(simID + 1).sendTextMessage(toNum, null, smsText, sentIntent, deliveryIntent);
+                    Log.e("sim africell:", smsText);
                 } else {
                     SmsManager.getDefault().sendTextMessage(toNum, null, smsText, sentIntent, deliveryIntent);
+                    Log.e("sim default:", smsText);
                 }
             }
 
@@ -142,6 +142,7 @@ public class SimUtils {
             }else{
                 Log.e("operator dont exist",operator);
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+
                 return preferences.getInt("InterconnectionSim",0);//si la sim n'est pas configuree on send avec sim1
             }
         } else {

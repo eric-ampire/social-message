@@ -51,6 +51,7 @@ public class Groupes extends AppCompatActivity {
         linearLayoutManager.setReverseLayout(false);
         recyclerView.setLayoutManager(linearLayoutManager);
         groupeAdapter = new GroupesAdapter(this, groupes);
+        groupeAdapter.setActivity(this);
         recyclerView.setAdapter(groupeAdapter);
         groupeAdapter.setOnItemClickListener(new GroupesAdapter.OnItemClickListener() {
             @Override

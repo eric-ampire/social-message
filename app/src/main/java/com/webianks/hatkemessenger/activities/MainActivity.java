@@ -79,12 +79,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ProgressBar progressBar;
     private List<Contact> contacts = new ArrayList<>();
 
+    public static int PHONE_STATE = 666;
+    public static int CONTACTS_STATE = 999;
+    public static int SMS_STATE = 555;
+
     @SuppressLint("MissingPermission")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         init();
+
+        if (Build.VERSION.SDK_INT >= 22) {
+
+            if(SubscriptionManager.from(this).getActiveSubscriptionInfoForSimSlotIndex(1) != null){
+                Log.e("dualsim", String.valueOf(
+                        SubscriptionManager.from(this).getActiveSubscriptionInfoForSimSlotIndex(0).getDisplayName()));
+                Log.e("dualsim", String.valueOf(
+                        SubscriptionManager.from(this).getActiveSubscriptionInfoForSimSlotIndex(1).getDisplayName()));
+            }
+
+            else{
+                Log.e("dualsim","faild");
+                Toast.makeText(this, "Vous devez avoir un telephone double sim svp", Toast.LENGTH_LONG).show();
+                this.finish();
+            }
+        }
     }
 
     private void init() {
@@ -96,9 +116,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         recyclerView.setLayoutManager(linearLayoutManager);
         fab.setOnClickListener(this);
 
-        if (checkDefaultSettings()) {
-            checkPermissions();
-        }
+        checkPermissionPhoneState();
+        checkPermissionContacts();
+        checkPermissionSms();
+        checkPermissions();
     }
 
     private void checkPermissions() {
@@ -111,47 +132,58 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         permission.add(Manifest.permission.READ_PHONE_STATE);
 
         Dexter.withActivity(this)
-            .withPermissions(permission)
-            .withListener(this)
-            .check();
+                .withPermissions(permission)
+                .withListener(this)
+                .check();
     }
 
-    private boolean checkDefaultSettings() {
+    private void checkPermissionSms() {
+        this.getPermission(Manifest.permission.READ_SMS, "READ_SMS",
+                "Cette permission est importante pour manipuler les sms",
+                SMS_STATE);
+    }
 
-        boolean isDefault = false;
+    private void checkPermissionContacts() {
+        this.getPermission(Manifest.permission.READ_CONTACTS, "READ_CONTACTS",
+                "Cette permission est importante pour manipuler les données des contacts",
+                CONTACTS_STATE);
+    }
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+    private void checkPermissionPhoneState() {
+        this.getPermission(Manifest.permission.READ_PHONE_STATE, "PHONE_STATE",
+                "Cette permission est importante pour acceder aux données du téléphone",
+                PHONE_STATE);
+    }
 
-            if (!Telephony.Sms.getDefaultSmsPackage(this).equals(getPackageName())) {
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setMessage("This app is not set as your default messaging app. Do you want to set it as default?")
-                        .setCancelable(false)
-                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+    private void getPermission(final String permission, String state_msg, String importance, final int state) {
+        if(ContextCompat.checkSelfPermission(this, permission) ==
+                PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(this, state_msg + " Permissions déjà accordées", Toast.LENGTH_SHORT).show();
+        } else {
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    permission)) {
+                new AlertDialog.Builder(this)
+                        .setTitle("Besoin de permission : " + state_msg)
+                        .setMessage(importance)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                ActivityCompat.requestPermissions(MainActivity.this,
+                                        new String[]{permission},state);
+                            }
+                        })
+                        .setNegativeButton("ANNULER", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
-                                checkPermissions();
                             }
-                        })
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            @TargetApi(19)
-                            public void onClick(DialogInterface dialog, int id) {
-                                Intent intent = new Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT);
-                                intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, getPackageName());
-                                startActivity(intent);
-                                checkPermissions();
-                            }
-                        });
-                builder.show();
-
-                isDefault = false;
-            } else
-                isDefault = true;
+                        }).create().show();
+            } else {
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{permission}, state);
+            }
         }
-        return isDefault;
     }
-
 
     private void setRecyclerView(List<SMS> data, List<Contact> contacts) {
         allConversationAdapter = new AllConversationAdapter(this, data, contacts);
@@ -230,18 +262,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case Constants.MY_PERMISSIONS_REQUEST_READ_SMS: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    getSupportLoaderManager().initLoader(Constants.ALL_SMS_LOADER, null, this);
-
-                } else {
-                    Toast.makeText(getApplicationContext(),
-                            "Can't access messages.", Toast.LENGTH_LONG).show();
-                    return;
-                }
+        if(requestCode == PHONE_STATE) {
+            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "PHONE_STATE Permission accordée", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "PHONE_STATE Permission refusée", Toast.LENGTH_SHORT).show();
+            }
+        }
+        if(requestCode == CONTACTS_STATE) {
+            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "CONTACTS_STATE Permission accordée", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "CONTACTS_STATE Permission refusée", Toast.LENGTH_SHORT).show();
+            }
+        }
+        if(requestCode == SMS_STATE) {
+            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "SMS_STATE Permission accordée", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "SMS_STATE Permission refusée", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -250,8 +289,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void itemClicked(int color, String contact, long id,String read) {
 
+        String numContact = contact.split(":")[0];
+        String nomContact = contact.split(":")[1];
+
         Intent intent = new Intent(this, SmsDetailedView.class);
-        intent.putExtra(Constants.CONTACT_NAME, contact);
+        intent.putExtra(Constants.CONTACT_NAME, nomContact);
+        intent.putExtra(Constants.CONTACT_NUM, numContact);
+
         intent.putExtra(Constants.COLOR, color);
         intent.putExtra(Constants.SMS_ID, id);
         intent.putExtra(Constants.READ, read);
@@ -266,9 +310,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String selection = null;
         String[] selectionArgs = null;
 
+        Log.e("autorisation","1");
+
         if (mCurFilter != null) {
             selection = SmsContract.SMS_SELECTION_SEARCH;
             selectionArgs = new String[]{"%" + mCurFilter + "%", "%" + mCurFilter + "%"};
+
+            Log.e("autorisation","2");
         }
 
         return new CursorLoader(this,
@@ -280,39 +328,45 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public List<Contact> allContact() {
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                Cursor phones = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
-                while (phones.moveToNext()) {
-                    for (int i = 0; i < phones.getColumnCount(); i++) {
+        Log.e("autorisation","3");
+        Cursor phones = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
+        List<Contact> contacts = new ArrayList<Contact>();
+        while (phones.moveToNext()) {
+            for (int i = 0; i < phones.getColumnCount(); i++) {
 
-                        try {
-                            Log.i(phones.getColumnName(i) + "", phones.getString(i));
-                        } catch (Exception e) {
-                            Log.i("ereur", i + "");
-                        }
+                try {
+                    Log.i(phones.getColumnName(i) + "", phones.getString(i));
+                } catch (Exception e) {
+                    Log.i("ereur", i + "");
+                }
 
-                    }
+            }
+
 
                     String name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
                     String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                    Log.i("num ", name);
-                    Log.i("nom ", phoneNumber);
-                    contacts.add(new Contact(name, phoneNumber, 0));
+                    String email = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Email.ADDRESS));
+                    Log.i("MainActivity - nom ", name);
+                    Log.i("MainActivity - num ", phoneNumber);
+                    Log.i("MainActivity - email ", email);
+                    contacts.add(new Contact(name, phoneNumber, email, 0));
                 }
                 phones.close();
-            }
-        });
+                return contacts;
 
-        return contacts;
+
+
+
+
     }
 
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, final Cursor cursor) {
-
+        Log.e("autorisation","4");
         if (cursor != null && cursor.getCount() > 0) {
             getAllSmsToFile(cursor);
+
+            progressBar.setVisibility(View.GONE);
 
         } else {
             //no sms
@@ -321,7 +375,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onLoaderReset(@NonNull Loader<Cursor> loader) {
-
+        Log.e("autorisation","5");
         data = null;
         allConversationAdapter.notifyDataSetChanged();
     }
@@ -351,10 +405,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void getAllSmsToFile(final Cursor c) {
 
-        AsyncTask.execute(new Runnable() {
+       /* AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
-                final List<SMS> lstSms = new ArrayList<SMS>();
+                final List<SMS> lstSms = new ArrayList<SMS>();*/
+                List<SMS> lstSms = new ArrayList<SMS>();
+
                 SMS objSMS = null;
                 int totalSMS = c.getCount();
 
@@ -388,14 +444,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 data = lstSms;
 
                 //Log.d(TAG,"Size before "+data.size());
-                runOnUiThread(new Runnable() {
+               /* runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         sortAndSetToRecycler(lstSms);
                     }
                 });
             }
-        });
+        });*/
+        sortAndSetToRecycler(lstSms);
     }
 
     private void sortAndSetToRecycler(List<SMS> lstSms) {
@@ -426,12 +483,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onPermissionsChecked(MultiplePermissionsReport report) {
-        AsyncTask.execute(new Runnable() {
+        /*AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
 
             }
-        });
+        });*/
 
         getSupportLoaderManager().initLoader(Constants.ALL_SMS_LOADER, null, this);
     }

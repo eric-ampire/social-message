@@ -44,7 +44,8 @@ public class DetailGroupeContactAdapter extends RecyclerView.Adapter<DetailGroup
         holder.nom.setText(contactActuel.getNom().length() > 13 ? contactActuel.getNom().substring(0, 13) + "..." : contactActuel.getNom());
         holder.numero.setText(contactActuel.getNumber());
         holder.cover.setColorFilter(generator.getColor(contactActuel));
-
+        holder.email.setText(contactActuel.getEmail());
+        holder.pref.setText(contactActuel.isPar_sms() ? "Pref: par SMS" : "Pref: par MAIL");
     }
 
     @Override
@@ -59,12 +60,18 @@ public class DetailGroupeContactAdapter extends RecyclerView.Adapter<DetailGroup
         private TextView numero;
         private ImageView cover;
 
+        private TextView email;
+        private TextView pref;
+
         public MyViewHolder(View itemView) {
             super(itemView);
 
             nom = (TextView) itemView.findViewById(R.id.namecontact);
             numero = (TextView) itemView.findViewById(R.id.contactnumber);
             cover = (ImageView) itemView.findViewById(R.id.covercontactgroupe);
+
+            email = (TextView) itemView.findViewById(R.id.contactemail);
+            pref = (TextView) itemView.findViewById(R.id.pref);
         }
 
     }
