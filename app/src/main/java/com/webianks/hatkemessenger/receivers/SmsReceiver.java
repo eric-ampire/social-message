@@ -18,9 +18,7 @@ import com.webianks.hatkemessenger.activities.SmsDetailedView;
 import com.webianks.hatkemessenger.constants.Constants;
 import com.webianks.hatkemessenger.services.SaveSmsService;
 
-/**
- * Created by R Ankit on 24-12-2016.
- */
+
 
 public class SmsReceiver extends BroadcastReceiver {
 

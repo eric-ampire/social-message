@@ -1,27 +1,31 @@
 package com.webianks.hatkemessenger.adapters;
 
+import android.app.AlertDialog;
 import android.content.Context;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.webianks.hatkemessenger.Groupe;
+import com.webianks.hatkemessenger.Ormlite;
 import com.webianks.hatkemessenger.R;
 import com.webianks.hatkemessenger.utils.ColorGeneratorModified;
 
 import java.util.List;
-import java.util.Random;
 
-/**
- * Created by 4B6555S .
- */
+
 
 public class GroupesAdapter extends RecyclerView.Adapter<GroupesAdapter.MyViewHolder> {
 
@@ -30,8 +34,14 @@ public class GroupesAdapter extends RecyclerView.Adapter<GroupesAdapter.MyViewHo
     private List<Groupe> groupes;
     private OnItemClickListener monItemClick;
 
+    private AppCompatActivity activity = null;
+
     public interface OnItemClickListener {
         void onItemClick(int position);
+    }
+
+    public void setActivity(AppCompatActivity activity) {
+        this.activity = activity;
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
@@ -96,6 +106,36 @@ public class GroupesAdapter extends RecyclerView.Adapter<GroupesAdapter.MyViewHo
                         monItemClick.onItemClick(position);
                     }
                 }
+                }
+            });
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    Log.e("longclick","Got it2");
+                    new AlertDialog.Builder(context)
+                            .setTitle("Suppression")
+                            .setMessage("Voulez-vous supprimer ce groupe?")
+                            .setPositiveButton("Oui", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    int position = getAdapterPosition();
+                                    int id_groupe = groupes.get(position).getId();
+                                    String nom_groupe = groupes.get(position).getNom();
+                                    Ormlite ormlite = new Ormlite(context);
+                                    ormlite.deleteGroupe(id_groupe);
+                                    Toast.makeText(context, "Groupe [" + nom_groupe + "] supprimé", Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(context, context.getClass());
+                                    activity.startActivity(intent);
+                                    activity.finish();
+                                }
+                            })
+                            .setNegativeButton("Non", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            }).show();
+                    return false;
                 }
             });
         }

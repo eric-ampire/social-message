@@ -1,6 +1,7 @@
 package com.webianks.hatkemessenger;
 
 import android.Manifest;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -21,9 +22,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.webianks.hatkemessenger.activities.MainActivity;
+import com.webianks.hatkemessenger.activities.SmsOrMailDialog;
 import com.webianks.hatkemessenger.adapters.NewSmsAdapter;
 import com.webianks.hatkemessenger.constants.Constants;
 import com.webianks.hatkemessenger.constants.SmsContract;
@@ -35,6 +38,7 @@ import java.util.List;
 public class NewSms extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor>{
     public EditText contact, sms;
+    private TextView tv_email;
     public ImageView sendeBt, contactBt;
     public String message;
     public final static int RESULT_PICK_CONTACT=1;
@@ -50,10 +54,11 @@ public class NewSms extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_sms);
         contact = (EditText)findViewById(R.id.txtphoneNo);
+        tv_email = (TextView)findViewById(R.id.email);
         sms = (EditText)findViewById(R.id.txtMessage);
         sendeBt = (ImageView)findViewById(R.id.imbtnSendSMS);
         contactBt = (ImageView)findViewById(R.id.imbtncontact);
-       // init();
+        // init();
         contactBt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -68,21 +73,14 @@ public class NewSms extends AppCompatActivity implements
             @Override
             public void onClick(View view) {
                 if(!contact.getText().toString().isEmpty()) {
-                    Ormlite ormlite = new Ormlite(getApplicationContext());
-                    if (ormlite.insertSms(
-                            new Smspp(sms.getText().toString(),false,"me",
-                                    contact.getText().toString()))){
-                        initRcv(ormlite.getSmsppByReceiverNumber(contact.getText().toString()));
-                    }
-
-
-                sendSMSMessage();
+                    openDialog();
                 }else contact.setError("Please add contact");
 
             }
         });
 
     }
+
     private void initRcv(List<Smspp> sms) {
 
         Intent intent = getIntent();
@@ -123,16 +121,35 @@ public class NewSms extends AppCompatActivity implements
                     try {
                         String phoneNo = null;
                         String name = null;
+                        String idContact = null;
+                        String email = null;
 
                         Uri uri = data.getData();
                         cursor = getContentResolver().query(uri, null, null, null, null);
                         cursor.moveToFirst();
                         int phoneIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
                         int nameIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
+                        int idContactIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID);
+
                         phoneNo = cursor.getString(phoneIndex);
                         name = cursor.getString(nameIndex);
+                        idContact = cursor.getString(idContactIndex);
+
+                        // get just the first email adress if there is
+                        ContentResolver cr = getContentResolver();
+                        Cursor crEmails = cr.query(ContactsContract.CommonDataKinds.Email.CONTENT_URI, null,
+                                ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?", new String[]{idContact}, null);
+                        if(crEmails.moveToFirst()) {
+                            email = crEmails.getString(crEmails.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
+                        }
+                        crEmails.close();
+
                         Log.e("Contact number is", name + "," + phoneNo);
+                        Log.e("EmailContact is", name + ", " + email);
+
                         contact.setText(phoneNo);
+                        tv_email.setText(email == null ? "No email" : email);
+
                         Ormlite ormlite = new Ormlite(getApplicationContext());
                         initRcv(ormlite.getSmsppByReceiverNumber(phoneNo));
                         Log.e("smsDB", ormlite.getSmsppByReceiverNumber(phoneNo).toString());
@@ -143,6 +160,52 @@ public class NewSms extends AppCompatActivity implements
             }
         } else {
             Log.e("Failed", "Not able to pick contact");
+        }
+    }
+
+    public void openDialog() {
+        SmsOrMailDialog dialog = new SmsOrMailDialog(new SmsOrMailDialog.SenderInterface() {
+            @Override
+            public void sendSMS() {
+                sendSMSMessage();
+            }
+
+            @Override
+            public void sendMAIL() {
+                sendMAILMessage();
+            }
+        });
+
+        dialog.show(getSupportFragmentManager(), "dialog sms or mail");
+    }
+
+    private void bubble() {
+        Ormlite ormlite = new Ormlite(getApplicationContext());
+        if (ormlite.insertSms(
+                new Smspp(sms.getText().toString(),false,"me",
+                        contact.getText().toString()))){
+            initRcv(ormlite.getSmsppByReceiverNumber(contact.getText().toString()));
+        }
+    }
+
+    private void sendMAILMessage() {
+        String email_address = tv_email.getText().toString();
+        if(email_address.contains("@")) {
+            message = sms.getText().toString();
+            if (message != null && message.trim().length() > 0) {
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("message/rfc822");
+                intent.putExtra(Intent.EXTRA_EMAIL, new String[]{email_address});
+                intent.putExtra(Intent.EXTRA_SUBJECT, "ALLSMS");
+                intent.putExtra(Intent.EXTRA_TEXT, message);
+                this.startActivity(Intent.createChooser(intent, "ALLSMS Par Mail"));
+                bubble();
+                sms.setText("");
+            } else {
+                sms.setError(getString(R.string.please_write_message));
+            }
+        } else {
+            Toast.makeText(this, "No email", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -197,6 +260,7 @@ public class NewSms extends AppCompatActivity implements
             if (new SimUtils().sendSMS(this, contact.getText().toString(),
                     null, sms.getText().toString(), null, null)) {
                 Log.e("sending", "success");
+                bubble();
                 sms.setText("");
             } else {
                 Log.e("sending", "false");

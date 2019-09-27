@@ -19,7 +19,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="140dp"
                 android:background="@color/colorPrimary">
 
                 <HorizontalScrollView
@@ -29,7 +29,7 @@
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/contactrcv"
                         android:layout_width="match_parent"
-                        android:layout_height="100dp">
+                        android:layout_height="140dp">
 
                     </androidx.recyclerview.widget.RecyclerView>
                 </HorizontalScrollView>

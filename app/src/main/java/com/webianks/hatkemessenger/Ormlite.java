@@ -65,6 +65,7 @@ public class Ormlite extends OrmLiteSqliteOpenHelper {
         }
         return null;
     }
+
     public boolean insertSmsGroupe(Smspg smspg){
         try {
             tableSmspg = getDao(Smspg.class);
@@ -75,6 +76,19 @@ public class Ormlite extends OrmLiteSqliteOpenHelper {
         }
         return false;
     }
+
+    public boolean deleteGroupe(int idGroupe){
+        try {
+            tableGroupe = getDao(Groupe.class);
+            tableGroupe.deleteById(idGroupe);
+            Log.e("delete","ok"+idGroupe);
+            return true;
+        } catch (SQLException e) {
+            Log.e("delete faild",e.getMessage());
+        }
+        return false;
+    }
+
     public List<Smspg> getSmspgByIdgroupe(int idGroupe){
         try {
             tableSmspg = getDao(Smspg.class);
