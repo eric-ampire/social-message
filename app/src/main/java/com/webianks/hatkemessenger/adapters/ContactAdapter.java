@@ -2,8 +2,14 @@ package com.webianks.hatkemessenger.adapters;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,16 +34,33 @@ import java.util.List;
  * Created by 4B6555S .
  */
 
-public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.MyViewHolder> {
+public class ContactAdapter extends ListAdapter<Contact, ContactAdapter.MyViewHolder> {
 
+    private static class ContactDiff extends DiffUtil.ItemCallback<Contact> {
+
+        @Override
+        public boolean areItemsTheSame(@NonNull Contact oldItem, @NonNull Contact newItem) {
+            return oldItem == newItem;
+        }
+
+        @Override
+        public boolean areContentsTheSame(@NonNull Contact oldItem, @NonNull Contact newItem) {
+            return oldItem.getId() == newItem.getId();
+        }
+    }
+
+    private static ContactDiff contactDiff = new ContactDiff();
     private ColorGeneratorModified generator;
     private Context context;
     private String titreGroupe;
-    private List<Contact> contacts;
 
-    public ContactAdapter(Context context, List<Contact> contacts, String titreGroupe) {
+    public ContactAdapter() {
+        super(contactDiff);
+    }
+
+    public ContactAdapter(Context context, String titreGroupe) {
+        super(contactDiff);
         this.context = context;
-        this.contacts = contacts;
         this.titreGroupe = titreGroupe;
         generator = ColorGeneratorModified.MATERIAL;
     }
@@ -45,23 +68,26 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.MyViewHo
     @Override
     public ContactAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.cardviewcontact, parent, false);
-        ContactAdapter.MyViewHolder myHolder = new ContactAdapter.MyViewHolder(view);
-        return myHolder;
+        return new ContactAdapter.MyViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final ContactAdapter.MyViewHolder holder, final int position) {
-        final Contact contactActuel = contacts.get(position);
-        holder.nom.setText(contacts.get(position).getNom());
-        holder.numero.setText(contacts.get(position).getNumber());
-        holder.email.setText(contacts.get(position).getEmail());
+        final Contact contactActuel = getItem(position);
+
+        holder.nom.setText(contactActuel.getNom());
+        holder.numero.setText(contactActuel.getNumber());
+        holder.email.setText(contactActuel.getEmail());
         holder.card.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                holder.cover.setColorFilter(generator.getColor(contacts.get(position).getNom()));
-                holder.ischeck.setBackgroundColor(generator.getColor(contacts.get(position + 1).getNom()));
+                // Todo:
+                //holder.cover.setColorFilter(generator.getColor(contactActuel.getNom()));
+                holder.rootView.setBackgroundColor(ContextCompat.getColor(context, R.color.dark_two));
+
+
                 contactActuel.setPar_sms(holder.par_sms.isChecked());
                 contactActuel.setPar_mail(holder.par_mail.isChecked());
                 Ormlite ormlite = new Ormlite(context);
@@ -98,14 +124,9 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.MyViewHo
         });
     }
 
-    @Override
-    public int getItemCount() {
-        return contacts.size();
-    }
-
-
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
+        private ConstraintLayout rootView;
         private TextView nom;
         private TextView numero;
         private TextView email;
@@ -118,17 +139,15 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.MyViewHo
         public MyViewHolder(View itemView) {
             super(itemView);
 
+            rootView = itemView.findViewById(R.id.rootView);
             nom = (TextView) itemView.findViewById(R.id.nomcontact);
             numero = (TextView) itemView.findViewById(R.id.numcontact);
             email = (TextView) itemView.findViewById(R.id.emailContact);
             card = (LinearLayout) itemView.findViewById(R.id.cardcontact);
             cover = (ImageView) itemView.findViewById(R.id.covercontact);
             ischeck = (FrameLayout) itemView.findViewById(R.id.ischeck);
-
             par_sms = (RadioButton) itemView.findViewById(R.id.parSms);
             par_mail = (RadioButton) itemView.findViewById(R.id.parMail);
         }
-
     }
-
 }
