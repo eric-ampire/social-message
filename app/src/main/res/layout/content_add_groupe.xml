@@ -72,10 +72,10 @@
             <Button
                 android:id="@+id/terminer"
                 android:layout_width="match_parent"
-                android:layout_height="30dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:layout_margin="10dp"
-                android:background="@color/colorPrimary"
+                android:background="@drawable/btn_back"
                 android:text="TERMINER"
                 android:textColor="@color/white"
                 android:textSize="20sp" />
